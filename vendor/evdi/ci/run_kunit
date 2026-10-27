@@ -1,0 +1,62 @@
+#! /usr/bin/env bash
+# Copyright (c) 2024 DisplayLink (UK) Ltd.
+
+set -e
+set -u
+
+linux_dir()
+{
+  if [ -d "/usr/src/linux" ]; then
+    echo "/usr/src/linux"
+  else
+    EVDI_REPO_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")/.."; pwd)
+    mkdir -p "$EVDI_REPO_DIR/tmp"
+    echo "$EVDI_REPO_DIR/tmp/linux"
+  fi
+}
+
+clone_linux()
+{
+  (
+  local parent_dir
+  parent_dir="$(dirname "$(linux_dir)")"
+  mkdir -p "$parent_dir"
+  cd "$parent_dir"
+  (
+  # shellcheck disable=SC1091
+  . /etc/os-release
+  if [[ "${ID}" == "centos" ]]; then
+    git clone https://gitlab.com/redhat/centos-stream/src/kernel/centos-stream-"${VERSION_ID}".git linux
+  else
+    git clone https://github.com/torvalds/linux
+  fi
+  )
+  )
+}
+
+patch_linux_with_evdi_module()
+{
+  local EVDI_REPO_DIR="$1"
+  local LINUX_DIR="$2"
+
+  [ -f "$LINUX_DIR/drivers/gpu/drm/evdi/Kconfig" ] && return
+
+  (cd "$LINUX_DIR"
+  ln -s -T "${EVDI_REPO_DIR}"/module drivers/gpu/drm/evdi
+  echo -e "\nsource \"drivers/gpu/drm/evdi/Kconfig\"" >> drivers/gpu/drm/Kconfig
+  echo "obj-\$(CONFIG_DRM_EVDI) += evdi/" >> drivers/gpu/drm/Makefile
+
+  make ARCH="$ARCH" mrproper)
+}
+
+export ARCH=x86_64 # or um
+EVDI_REPO_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")/.."; pwd)
+LINUX_DIR="$(linux_dir)"
+[ -d "${LINUX_DIR}" ] || clone_linux
+
+patch_linux_with_evdi_module "$EVDI_REPO_DIR" "$LINUX_DIR"
+
+echo "Run kunit tests for evdi module"
+(cd "${LINUX_DIR}"
+./tools/testing/kunit/kunit.py run --arch="$ARCH" --kunitconfig=drivers/gpu/drm/evdi/tests/.kunitconfig)
+

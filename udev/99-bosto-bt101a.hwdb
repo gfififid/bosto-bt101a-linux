@@ -1,0 +1,7 @@
+# Bosto BT-101A Touch, known Stylus collection / descriptor 6f04ee78...
+# Report 02 declares a duplicate X field with pressure range 8191.
+# Correct the active report-01 coordinate range, and remove wrong BT-12HD resolutions.
+# This exact collection differs from the separate report-0A Pen collection.
+evdev:input:b0003v0ED1p7821e0111-e0,1,3,4,k100,101,102,103,104,105,140,141,14A,14B,ra0,1,18,1A,1B,m4,lsfw
+ EVDEV_ABS_00=0:17920:83
+ EVDEV_ABS_01=0:10240:76

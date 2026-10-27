@@ -1,0 +1,23 @@
+[Unit]
+Description=Bosto BT-101A USB display (%i)
+BindsTo=dev-bus-usb-%i.device
+After=dev-bus-usb-%i.device systemd-udev-trigger.service display-manager.service
+StartLimitIntervalSec=0
+
+[Service]
+Type=exec
+EnvironmentFile=-/etc/default/bosto-display
+ExecStart=/usr/local/lib/bosto-display/service-runner.sh
+Restart=on-failure
+RestartSec=3
+RestartPreventExitStatus=78
+TimeoutStopSec=8
+KillSignal=SIGTERM
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectHome=true
+ProtectSystem=full
+
+# Activated by the USB device's SYSTEMD_WANTS, including boot coldplug.
+# No [Install] section: do not enable an instance for an absent device.

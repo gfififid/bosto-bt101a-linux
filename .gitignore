@@ -1,0 +1,13 @@
+/build/
+/pen-calibration-*.json
+*.pyc
+__pycache__/
+/vendor/evdi/library/*.o
+/vendor/evdi/library/libevdi.so*
+/vendor/evdi/module/*.o
+/vendor/evdi/module/*.ko
+/vendor/evdi/module/*.mod*
+/vendor/evdi/module/.*.cmd
+/vendor/evdi/module/Module.symvers
+/vendor/evdi/module/modules.order
+/vendor/evdi/module/evdi_detect.h

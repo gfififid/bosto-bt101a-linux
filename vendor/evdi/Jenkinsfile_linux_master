@@ -1,0 +1,132 @@
+// Copyright (c) 2022 DisplayLink (UK) Ltd.
+pipeline {
+    agent {
+        label 'linux && big && docker'
+    }
+    stages {
+        stage ('Prepare sources') {
+            steps {
+                dir('src') {
+                    script {
+                     sh '''#!/usr/bin/env bash
+                       git remote add github "https://github.com/DisplayLink/evdi.git"
+                       git fetch github
+                       '''
+                    }
+                }
+            }
+        }
+        stage ('Validate vanilla kernel against origin/main') {
+            agent {
+                docker {
+                    image "swt/evdi:1.0"
+                    label 'linux && big && docker'
+                    reuseNode true
+                }
+            }
+            steps {
+                dir('src') {
+                    sh '''#!/usr/bin/env bash
+                        set -e
+                        git checkout origin/main
+                        ./ci/build_against_kernel --repo-ci master
+                        ./ci/build_against_kernel --repo-ci rc
+                        ./ci/build_against_kernel --repo-ci all
+                        '''
+                }
+            }
+        }
+        stage ('Validate CentOS 10 kernel against origin/main') {
+            agent {
+                docker {
+                    image "swt/evdi-centos-10:1.0"
+                    label 'linux && big && docker'
+                    reuseNode true
+                }
+            }
+            steps {
+                dir('src') {
+                    sh '''#!/usr/bin/env bash
+                        set -e
+                        git checkout origin/main
+                        ./ci/build_against_kernel --repo-ci main
+                        '''
+                }
+            }
+        }
+        stage ('Validate CentOS 9 kernel against origin/main') {
+            agent {
+                docker {
+                    image "swt/evdi-centos-9:1.0"
+                    label 'linux && big && docker'
+                    reuseNode true
+                }
+            }
+            steps {
+                dir('src') {
+                    sh '''#!/usr/bin/env bash
+                        set -e
+                        git checkout origin/main
+                        ./ci/build_against_kernel --repo-ci main
+                        '''
+                }
+            }
+        }
+        stage ('Validate vanilla kernel against github/main') {
+            agent {
+                docker {
+                    image "swt/evdi:1.0"
+                    label 'linux && big && docker'
+                    reuseNode true
+                }
+            }
+            steps {
+                dir('src') {
+                    sh '''#!/usr/bin/env bash
+                        set -e
+                        git checkout github/main
+                        ./ci/build_against_kernel --repo-ci master
+                        ./ci/build_against_kernel --repo-ci rc
+                        ./ci/build_against_kernel --repo-ci all
+                        '''
+                }
+            }
+        }
+        stage ('Validate CentOS 10 kernel against github/main') {
+            agent {
+                docker {
+                    image "swt/evdi-centos-10:1.0"
+                    label 'linux && big && docker'
+                    reuseNode true
+                }
+            }
+            steps {
+                dir('src') {
+                    sh '''#!/usr/bin/env bash
+                        set -e
+                        git checkout github/main
+                        ./ci/build_against_kernel --repo-ci main
+                        '''
+                }
+            }
+        }
+        stage ('Validate CentOS 9 kernel against github/main') {
+            agent {
+                docker {
+                    image "swt/evdi-centos-9:1.0"
+                    label 'linux && big && docker'
+                    reuseNode true
+                }
+            }
+            steps {
+                dir('src') {
+                    sh '''#!/usr/bin/env bash
+                        set -e
+                        git checkout github/main
+                        ./ci/build_against_kernel --repo-ci main
+                        '''
+                }
+            }
+        }
+    }
+}

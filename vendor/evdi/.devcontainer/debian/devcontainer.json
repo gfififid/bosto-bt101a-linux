@@ -1,0 +1,35 @@
+{
+  "name": "Evdi debian dev-container",
+  "image": "artifactory.cam.displaylink.com:6001/swt/evdi:1.0",
+  //"build": {
+  //  "dockerfile": "../../Dockerfile"
+  //},
+  "remoteUser": "vscode",
+  "features": {
+    "ghcr.io/devcontainers/features/common-utils:2": {
+      "installZsh": "false",
+      "username": "vscode",
+      "userUid": "automatic",
+      "userGid": "automatic",
+      "upgradePackages": "false"
+    },
+    "ghcr.io/rocker-org/devcontainer-features/apt-packages:1": {
+      "packages": "vim, tig, kmod, dkms"
+    }
+  },
+  "workspaceMount": "source=${localWorkspaceFolder}/..,target=/workspaces,type=bind,consistency=cached",
+  "mounts": [
+    "source=${localEnv:HOME}/.gitconfig,target=/home/vscode/.gitconfig,type=bind,consistency=cached"
+    ],
+
+  "customizations": {
+    "vscode": {
+      "settings": {},
+      "extensions": [
+        "ms-python.python",
+        "ms-python.debugpy",
+        "ms-vscode.cmake-tools"
+      ]
+    }
+  }
+}

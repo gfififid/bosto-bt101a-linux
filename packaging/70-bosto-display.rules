@@ -1,0 +1,3 @@
+# Device-specific system service; HID pen/touch interfaces remain attached.
+# BUSNUM/DEVNUM are padded to match /dev/bus/usb/BBB/DDD device unit names.
+ACTION!="remove", SUBSYSTEM=="usb", ENV{DEVTYPE}=="usb_device", ATTR{idVendor}=="34c7", ATTR{idProduct}=="2700", TAG+="systemd", ENV{SYSTEMD_WANTS}+="bosto-display@%E{BUSNUM}-%E{DEVNUM}.service"

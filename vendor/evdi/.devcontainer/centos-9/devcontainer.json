@@ -1,0 +1,21 @@
+{
+  "name": "Evdi centos 9 dev-container",
+  "image": "artifactory.cam.displaylink.com:6001/swt/evdi-centos-9:1.0",
+  //"build": {
+  // "dockerfile": "Dockerfile"
+  //},
+  "remoteUser": "vscode",
+  "features": {
+    "ghcr.io/devcontainers/features/common-utils:2": {
+      "installZsh": "false",
+      "username": "vscode",
+      "userUid": "automatic",
+      "userGid": "automatic",
+      "upgradePackages": "false"
+    }
+  },
+  "workspaceMount": "source=${localWorkspaceFolder}/..,target=/workspaces,type=bind,consistency=cached",
+  "mounts": [
+    "source=${localEnv:HOME}/.gitconfig,target=/home/vscode/.gitconfig,type=bind,consistency=cached"
+  ]
+}
